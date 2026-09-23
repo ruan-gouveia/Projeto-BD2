@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import br.edu.ifpb.es.daw.config.CacheNames;
+import org.springframework.cache.annotation.Cacheable;
+
 
 import java.util.List;
 
@@ -33,6 +36,7 @@ public class FilmeService {
                 .map(FilmeResponseDTO::new);
     }
 
+    @Cacheable(cacheNames = CacheNames.FILMES, key = "#id")
     public FilmeResponseDTO buscarPorId(Long id) {
         return filmeRepository.findById(id)
                 .map(FilmeResponseDTO::new)
