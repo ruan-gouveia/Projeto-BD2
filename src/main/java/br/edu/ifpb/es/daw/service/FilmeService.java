@@ -8,6 +8,7 @@ import br.edu.ifpb.es.daw.entities.Genero;
 import br.edu.ifpb.es.daw.exception.RecursoNaoEncontradoException;
 import br.edu.ifpb.es.daw.repository.AdministradorRepository;
 import br.edu.ifpb.es.daw.repository.FilmeRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -83,6 +84,7 @@ public class FilmeService {
         return new FilmeResponseDTO(filmeSalvo);
     }
 
+    @CacheEvict(cacheNames = CacheNames.FILMES, key = "#id")
     @Transactional
     public void deletar(Long id) {
         if (!filmeRepository.existsById(id)) {
