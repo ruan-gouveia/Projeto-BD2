@@ -16,6 +16,10 @@ public class Conteudo {      //tlvz representar como classe abstrata dps...
     @Column(name = "id_conteudo")
     private Long id;
 
+    @Version
+    @Column(name = "versao")
+    private Long versao;
+
     @Column(name = "titulo", nullable = false)
     private String titulo;
 
@@ -45,6 +49,9 @@ public class Conteudo {      //tlvz representar como classe abstrata dps...
 
     public Long getIdConteudo() { return id; }
     public void setIdConteudo(Long idConteudo) { this.id = idConteudo; }
+
+    public Long getVersao() { return versao; }
+    public void setVersao(Long versao) { this.versao = versao; }
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
