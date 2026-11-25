@@ -9,6 +9,9 @@ import br.edu.ifpb.es.daw.exception.RecursoNaoEncontradoException;
 import br.edu.ifpb.es.daw.repository.ConteudoRepository;
 import br.edu.ifpb.es.daw.repository.HistoricoRepository;
 import br.edu.ifpb.es.daw.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class HistoricoService {
+
+    private static final Logger log = LoggerFactory.getLogger(HistoricoService.class);
 
     private final HistoricoRepository historicoRepository;
     private final UsuarioRepository usuarioRepository;
@@ -37,26 +42,32 @@ public class HistoricoService {
                 .collect(Collectors.toList());
     }
 
+    @Async("historicoExecutor")
     @Transactional
-    public HistoricoResponseDTO registrarOuAtualizar(HistoricoRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.idUsuario())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+    public void registrar(HistoricoRequestDTO dto) {
+        log.info("Registrando histórico (usuario={}, conteudo={}) na thread {}",
+                dto.idUsuario(), dto.idConteudo(), Thread.currentThread().getName());
+        try {
+            Usuario usuario = usuarioRepository.findById(dto.idUsuario())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
-        Conteudo conteudo = conteudoRepository.findById(dto.idConteudo())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Conteúdo não encontrado"));
+            Conteudo conteudo = conteudoRepository.findById(dto.idConteudo())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Conteúdo não encontrado"));
 
-        Historico historico = historicoRepository
-                .findByUsuario_IdAndConteudo_Id(usuario.getIdUsuario(), conteudo.getIdConteudo())
-                .orElse(new Historico());
+            Historico historico = historicoRepository
+                    .findByUsuario_IdAndConteudo_Id(usuario.getIdUsuario(), conteudo.getIdConteudo())
+                    .orElseGet(Historico::new);
 
-        if (historico.getId() == null) {
-            historico.setUsuario(usuario);
-            historico.setConteudo(conteudo);
+            if (historico.getId() == null) {
+                historico.setUsuario(usuario);
+                historico.setConteudo(conteudo);
+            }
+
+            historico.setTimestamp(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+            historicoRepository.save(historico);
+        } catch (Exception e) {
+            log.warn("Falha ao registrar histórico (async): {}", e.getMessage());
         }
-
-        historico.setTimestamp(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-
-        return new HistoricoResponseDTO(historicoRepository.save(historico));
     }
 
     @Transactional
