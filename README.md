@@ -138,17 +138,15 @@ As políticas garantem Arquitetura de Defesa em Profundidade. O catálogo é de 
 
 ## Como executar localmente (Docker)
 
-O banco local é um PostgreSQL 17 em container, definido em `docker-compose.yml`:
+O ambiente local sobe um **PostgreSQL 17** e um **Redis 7** em containers, definidos em `docker-compose.yml`:
 
-| Item | Valor |
-|---|---|
-| Container | `badplay-postgres` |
-| Banco / usuário / senha | `badplay` / `badplay` / `badplay` |
-| Porta | `5432` |
-| Volume | `badplay_badplay-pgdata` |
+| Serviço | Container | Porta | Detalhes |
+|---|---|---|---|
+| **PostgreSQL 17** | `badplay-postgres` | `5432` | Banco/usuário/senha: `badplay` / `badplay` / `badplay` · Volume: `badplay_badplay-pgdata` |
+| **Redis 7** | `badplay-redis` | `6379` | Cache-aside em memória (`--save "" --appendonly no`) |
 
 ```bash
-# 1. Subir o banco
+# 1. Subir PostgreSQL e Redis
 docker compose up -d
 
 # 2. Rodar a API (perfil `local` é o padrão)

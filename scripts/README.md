@@ -33,5 +33,3 @@ bash scripts/testes.sh
 6. **PUT série (versão antiga)** — detecta conflito e retorna `HTTP 409`
 7. **POST histórico** — retorna `HTTP 202` imediatamente (processamento assíncrono) e exibe o tempo de resposta
 8. **GET histórico** — aguarda 2 segundos e confirma que o registro foi persistido
-
-Para outros cenários manuais (como concorrência simultânea e teste com o PostgreSQL parado), consulte o roteiro completo em [`docs/GUIA-TESTES-BLOQUEIO-OTIMISTA-E-DISPONIBILIDADE.md`](../docs/GUIA-TESTES-BLOQUEIO-OTIMISTA-E-DISPONIBILIDADE.md).
