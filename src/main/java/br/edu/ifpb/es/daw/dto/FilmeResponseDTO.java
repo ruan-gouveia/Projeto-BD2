@@ -6,6 +6,7 @@ import br.edu.ifpb.es.daw.entities.Genero;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public record FilmeResponseDTO(
@@ -17,6 +18,10 @@ public record FilmeResponseDTO(
         List<String> generos,
         Long versao
 ) implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public FilmeResponseDTO(Filme f) {
         this(
                 f.getIdConteudo(),
