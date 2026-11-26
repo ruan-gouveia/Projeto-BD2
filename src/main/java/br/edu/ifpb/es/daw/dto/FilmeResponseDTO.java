@@ -6,6 +6,8 @@ import br.edu.ifpb.es.daw.entities.Genero;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.io.Serializable;
+
 public record FilmeResponseDTO(
         Long idConteudo,
         String titulo,
@@ -14,7 +16,7 @@ public record FilmeResponseDTO(
         Integer duracaoMinutos,
         List<String> generos,
         Long versao
-) {
+) implements Serializable {
     public FilmeResponseDTO(Filme f) {
         this(
                 f.getIdConteudo(),
@@ -27,3 +29,5 @@ public record FilmeResponseDTO(
         );
     }
 }
+
+

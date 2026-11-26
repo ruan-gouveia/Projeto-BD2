@@ -9,10 +9,14 @@ import br.edu.ifpb.es.daw.exception.ConflitoDeEdicaoException;
 import br.edu.ifpb.es.daw.exception.RecursoNaoEncontradoException;
 import br.edu.ifpb.es.daw.repository.AdministradorRepository;
 import br.edu.ifpb.es.daw.repository.FilmeRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import br.edu.ifpb.es.daw.config.CacheNames;
+import org.springframework.cache.annotation.Cacheable;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -35,12 +39,14 @@ public class FilmeService {
                 .map(FilmeResponseDTO::new);
     }
 
+    @Cacheable(cacheNames = CacheNames.FILMES, key = "#id")
     public FilmeResponseDTO buscarPorId(Long id) {
         return filmeRepository.findById(id)
                 .map(FilmeResponseDTO::new)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Filme não encontrado!"));
     }
 
+    @CacheEvict(cacheNames = CacheNames.FILMES, key = "#id")
     @Transactional
     public FilmeResponseDTO atualizar(Long id, FilmeRequestDTO dto) {
         Filme filme = filmeRepository.findById(id)
@@ -91,6 +97,7 @@ public class FilmeService {
         return new FilmeResponseDTO(filmeSalvo);
     }
 
+    @CacheEvict(cacheNames = CacheNames.FILMES, key = "#id")
     @Transactional
     public void deletar(Long id) {
         if (!filmeRepository.existsById(id)) {
