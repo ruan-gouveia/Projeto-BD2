@@ -1,6 +1,7 @@
 package br.edu.ifpb.es.daw.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +42,23 @@ public class GlobalExceptionHandler {
     public Map<String, String> handleIllegalArgument(IllegalArgumentException ex) {
         Map<String, String> erro = new HashMap<>();
         erro.put("erro", ex.getMessage());
+        return erro;
+    }
+
+    @ExceptionHandler(ConflitoDeEdicaoException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleConflitoDeEdicao(ConflitoDeEdicaoException ex) {
+        Map<String, String> erro = new HashMap<>();
+        erro.put("erro", ex.getMessage());
+        return erro;
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleOptimisticLock(ObjectOptimisticLockingFailureException ex) {
+        Map<String, String> erro = new HashMap<>();
+        erro.put("erro", "Conflito de edição: outro administrador já atualizou este conteúdo. "
+                + "Recarregue os dados e tente novamente.");
         return erro;
     }
 

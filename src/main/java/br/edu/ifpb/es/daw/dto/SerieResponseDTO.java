@@ -10,14 +10,16 @@ public record SerieResponseDTO(
         Long idConteudo,
         String titulo,
         String descricao,
-        List<String> generos
+        List<String> generos,
+        Long versao
 ) {
     public SerieResponseDTO(Serie s) {
         this(
                 s.getIdConteudo(),
                 s.getTitulo(),
                 s.getDescricao(),
-                s.getGeneros() != null ? s.getGeneros().stream().map(Genero::getNome).collect(Collectors.toList()) : List.of()
+                s.getGeneros() != null ? s.getGeneros().stream().map(Genero::getNome).collect(Collectors.toList()) : List.of(),
+                s.getVersao()
         );
     }
 }

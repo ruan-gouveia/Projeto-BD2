@@ -13,5 +13,7 @@ public record SerieRequestDTO(
         @NotNull(message = "O ID do Administrador é obrigatório")
         Long idAdministrador,
 
-        List<Long> generosIds
+        List<Long> generosIds,
+
+        Long versao
 ) {}

@@ -5,6 +5,7 @@ import br.edu.ifpb.es.daw.dto.SerieResponseDTO;
 import br.edu.ifpb.es.daw.entities.Administrador;
 import br.edu.ifpb.es.daw.entities.Genero;
 import br.edu.ifpb.es.daw.entities.Serie;
+import br.edu.ifpb.es.daw.exception.ConflitoDeEdicaoException;
 import br.edu.ifpb.es.daw.exception.RecursoNaoEncontradoException;
 import br.edu.ifpb.es.daw.repository.AdministradorRepository;
 import br.edu.ifpb.es.daw.repository.SerieRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SerieService {
@@ -72,6 +74,15 @@ public class SerieService {
         Serie serie = serieRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Série não encontrada"));
 
+        if (dto.versao() == null) {
+            throw new IllegalArgumentException("O campo 'versao' é obrigatório na atualização");
+        }
+        if (!Objects.equals(serie.getVersao(), dto.versao())) {
+            throw new ConflitoDeEdicaoException(
+                    "Conflito de edição: outro administrador já atualizou este conteúdo. "
+                            + "Recarregue os dados e tente novamente.");
+        }
+
         serie.setTitulo(dto.titulo());
         serie.setDescricao(dto.descricao());
 
@@ -79,6 +90,7 @@ public class SerieService {
             serie.setGeneros(generoService.buscarEntidadesPorIds(dto.generosIds()));
         }
 
-        return new SerieResponseDTO(serieRepository.save(serie));
+        Serie salva = serieRepository.saveAndFlush(serie);
+        return new SerieResponseDTO(salva);
     }
 }

@@ -133,3 +133,36 @@ As políticas garantem Arquitetura de Defesa em Profundidade. O catálogo é de 
 | **tb_historico** | `Leitura do Historico` | authenticated | SELECT | `(id_usuario = auth.uid())` | — |
 | **tb_historico** | `Delecao do Historico` | authenticated | DELETE | `(id_usuario = auth.uid())` | — |
 | **tb_historico** | `Assinante Ativo Assiste` | authenticated | INSERT | — | `((id_usuario = auth.uid()) AND (EXISTS (SELECT 1 FROM tb_assinatura a WHERE (a.id_usuario = auth.uid()) AND (a.status = 'ATIVA') AND (a.data_fim >= CURRENT_DATE))))` |
+
+---
+
+## Como executar localmente (Docker)
+
+O banco local é um PostgreSQL 17 em container, definido em `docker-compose.yml`:
+
+| Item | Valor |
+|---|---|
+| Container | `badplay-postgres` |
+| Banco / usuário / senha | `badplay` / `badplay` / `badplay` |
+| Porta | `5432` |
+| Volume | `badplay_badplay-pgdata` |
+
+```bash
+# 1. Subir o banco
+docker compose up -d
+
+# 2. Rodar a API (perfil `local` é o padrão)
+./mvnw spring-boot:run          # Linux/macOS
+.\mvnw.cmd spring-boot:run      # Windows
+```
+
+- API: <http://localhost:8080>
+- Swagger: <http://localhost:8080/swagger-ui.html>
+- Para zerar o banco local: `docker compose down -v`
+
+### Perfil do banco
+
+| Perfil | Banco | Como ativar |
+|---|---|---|
+| `local` (padrão) | PostgreSQL do `docker-compose.yml` | nada a fazer |
+| `neon` | Banco remoto do Neon | `.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=neon` |

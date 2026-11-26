@@ -5,6 +5,7 @@ import br.edu.ifpb.es.daw.dto.FilmeResponseDTO;
 import br.edu.ifpb.es.daw.entities.Administrador;
 import br.edu.ifpb.es.daw.entities.Filme;
 import br.edu.ifpb.es.daw.entities.Genero;
+import br.edu.ifpb.es.daw.exception.ConflitoDeEdicaoException;
 import br.edu.ifpb.es.daw.exception.RecursoNaoEncontradoException;
 import br.edu.ifpb.es.daw.repository.AdministradorRepository;
 import br.edu.ifpb.es.daw.repository.FilmeRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FilmeService {
@@ -44,6 +46,15 @@ public class FilmeService {
         Filme filme = filmeRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Filme não encontrado"));
 
+        if (dto.versao() == null) {
+            throw new IllegalArgumentException("O campo 'versao' é obrigatório na atualização");
+        }
+        if (!Objects.equals(filme.getVersao(), dto.versao())) {
+            throw new ConflitoDeEdicaoException(
+                    "Conflito de edição: outro administrador já atualizou este conteúdo. "
+                            + "Recarregue os dados e tente novamente.");
+        }
+
         filme.setTitulo(dto.titulo());
         filme.setDescricao(dto.descricao());
         filme.setUrlFilme(dto.urlFilme());
@@ -53,7 +64,8 @@ public class FilmeService {
             filme.setGeneros(generoService.buscarEntidadesPorIds(dto.generosIds()));
         }
 
-        return new FilmeResponseDTO(filmeRepository.save(filme));
+        Filme salvo = filmeRepository.saveAndFlush(filme);
+        return new FilmeResponseDTO(salvo);
     }
 
     @Transactional

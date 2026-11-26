@@ -8,7 +8,8 @@ public record ConteudoResponseDTO(
         Long id,
         String titulo,
         String descricao,
-        String tipo
+        String tipo,
+        Long versao
 ) {
     public static ConteudoResponseDTO daEntidade(Conteudo conteudo) {
         String tipoConteudo = "CONTEUDO";
@@ -19,7 +20,8 @@ public record ConteudoResponseDTO(
                 conteudo.getIdConteudo(),
                 conteudo.getTitulo(),
                 conteudo.getDescricao(),
-                tipoConteudo
+                tipoConteudo,
+                conteudo.getVersao()
         );
     }
 }

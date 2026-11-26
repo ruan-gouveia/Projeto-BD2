@@ -12,7 +12,8 @@ public record FilmeResponseDTO(
         String descricao,
         String urlFilme,
         Integer duracaoMinutos,
-        List<String> generos
+        List<String> generos,
+        Long versao
 ) {
     public FilmeResponseDTO(Filme f) {
         this(
@@ -21,7 +22,8 @@ public record FilmeResponseDTO(
                 f.getDescricao(),
                 f.getUrlFilme(),
                 f.getDuracao(),
-                f.getGeneros() != null ? f.getGeneros().stream().map(Genero::getNome).collect(Collectors.toList()) : List.of()
+                f.getGeneros() != null ? f.getGeneros().stream().map(Genero::getNome).collect(Collectors.toList()) : List.of(),
+                f.getVersao()
         );
     }
 }
